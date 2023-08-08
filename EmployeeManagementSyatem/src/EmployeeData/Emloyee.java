@@ -148,45 +148,57 @@ class FileHandling
 	
 	// Update data
 	public void updateEmployeeAttributeById(int targetId) throws Exception {
-        List<String> updatedRecords = new ArrayList<>();
+	    List<String> updatedRecords = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fo))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                int id = extractIdFromLine(line);
-                if (id == targetId) {
-                    System.out.println("Enter updated name: ");
-                    String updatedName = sobj.next();
-                    System.out.println("Enter updated salary: ");
-                    int updatedSalary = sobj.nextInt();
-                    System.out.println("Enter updated city: ");
-                    String updatedCity = sobj.next();
-                    System.out.println("Enter updated age: ");
-                    int updatedAge = sobj.nextInt();
+	    try (BufferedReader reader = new BufferedReader(new FileReader(fo))) {
+	        String line;
+	        while ((line = reader.readLine()) != null) {
+	            int id = extractIdFromLine(line);
+	            if (id == targetId) {
+	                System.out.println("Enter updated name: ");
+	                String updatedName = sobj.next();
+	                System.out.println("Enter updated salary: ");
+	                int updatedSalary = sobj.nextInt();
+	                System.out.println("Enter updated city: ");
+	                String updatedCity = sobj.next();
+	                System.out.println("Enter updated age: ");
+	                int updatedAge = sobj.nextInt();
 
-                    line = updateAttribute(line, "Name", updatedName);
-                    line = updateAttribute(line, "Salary", String.valueOf(updatedSalary));
-                    line = updateAttribute(line, "City", updatedCity);
-                    line = updateAttribute(line, "Age", String.valueOf(updatedAge));
-                }
-                updatedRecords.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+	                line = updateAttribute(line, "Name", updatedName);
+	                line = updateAttribute(line, "Salary", String.valueOf(updatedSalary));
+	                line = updateAttribute(line, "City", updatedCity);
+	                line = updateAgeAttribute(line, updatedAge);
+	            }
+	            updatedRecords.add(line);
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fo))) {
-            for (String record : updatedRecords) {
-                writer.println(record);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	    try (PrintWriter writer = new PrintWriter(new FileWriter(fo))) {
+	        for (String record : updatedRecords) {
+	            writer.println(record);
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
 
-    private String updateAttribute(String line, String attributeName, String updatedValue) {
-        return line.replaceFirst(attributeName + " = .*? :", attributeName + " = " + updatedValue + " :");
-    }
+	private String updateAgeAttribute(String line, int updatedAge) {
+	    String[] parts = line.split(": ");
+	    for (int i = 0; i < parts.length; i++) {
+	        if (parts[i].startsWith("Age = ")) {
+	            parts[i] = "Age = " + updatedAge + ".";
+	            break;
+	        }
+	    }
+	    return String.join(": ", parts);
+	}
+
+
+	private String updateAttribute(String line, String attributeName, String updatedValue) {
+	    return line.replaceFirst(attributeName + " = .*? :", attributeName + " = " + updatedValue + " :");
+	}       
 	    
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	    
 	
